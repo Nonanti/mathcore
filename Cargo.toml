@@ -35,7 +35,7 @@ wasm = ["wasm-bindgen", "getrandom"]
 full = ["parallel", "fft"]
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = "0.7"
 approx = "0.5"
 proptest = "1.4"
 
