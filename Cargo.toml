@@ -1,0 +1,49 @@
+[package]
+name = "mathcore"
+version = "0.3.0"
+edition = "2021"
+authors = ["Mehmet Yilmaz <mehmet@nonanti.dev>"]
+description = "Symbolic math library and computer algebra system for Rust"
+license = "MIT"
+repository = "https://github.com/Nonanti/mathcore"
+keywords = ["math", "symbolic", "algebra", "calculus", "cas"]
+categories = ["mathematics", "science"]
+
+[dependencies]
+nom = "7.1"
+num-complex = "0.4"
+num-traits = "0.2"
+num-bigint = "0.4"
+num-rational = "0.4"
+nalgebra = "0.32"
+thiserror = "1.0"
+indexmap = "2.0"
+ndarray = "0.15"
+rayon = { version = "1.7", optional = true }
+rustfft = { version = "6.1", optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+getrandom = { version = "0.2", features = ["js"], optional = true }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+
+[features]
+default = ["parallel", "fft"]
+parallel = ["rayon"]
+fft = ["rustfft"]
+wasm = ["wasm-bindgen", "getrandom"]
+full = ["parallel", "fft"]
+
+[dev-dependencies]
+criterion = "0.5"
+approx = "0.5"
+proptest = "1.4"
+
+
+[profile.release]
+lto = true
+codegen-units = 1
+opt-level = 3
+
+[profile.bench]
+inherits = "release"
