@@ -44,7 +44,6 @@ mathcore = "0.3.1"
 
 ```rust
 use mathcore::MathCore;
-use std::collections::HashMap;
 
 fn main() {
     let math = MathCore::new();
@@ -121,6 +120,7 @@ println!("π ≈ {}", pi);
 
 ```rust
 use mathcore::ml::{Optimization, SymbolicIntegration};
+use std::collections::HashMap;
 
 // Compute gradient
 let loss = MathCore::parse("x^2 + y^2").unwrap();
