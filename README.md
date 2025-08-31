@@ -31,11 +31,13 @@ A symbolic math library for Rust. Think of it as a computer algebra system (CAS)
 
 ## Installation
 
-Add to your `Cargo.toml`:
+**Option 1:** Run `cargo add mathcore` in your project's root directory.
+
+**Option 2:** Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-mathcore = "0.1.0"
+mathcore = "0.3.1"
 ```
 
 ## Quick example
