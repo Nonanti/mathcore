@@ -31,18 +31,19 @@ A symbolic math library for Rust. Think of it as a computer algebra system (CAS)
 
 ## Installation
 
-Add to your `Cargo.toml`:
+**Option 1:** Run `cargo add mathcore` in your project's root directory.
+
+**Option 2:** Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-mathcore = "0.1.0"
+mathcore = "0.3.1"
 ```
 
 ## Quick example
 
 ```rust
 use mathcore::MathCore;
-use std::collections::HashMap;
 
 fn main() {
     let math = MathCore::new();
@@ -119,6 +120,7 @@ println!("π ≈ {}", pi);
 
 ```rust
 use mathcore::ml::{Optimization, SymbolicIntegration};
+use std::collections::HashMap;
 
 // Compute gradient
 let loss = MathCore::parse("x^2 + y^2").unwrap();
