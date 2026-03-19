@@ -1,5 +1,5 @@
+use mathcore::prelude::*;
 use mathcore::{Expr, MathCore};
-use std::collections::HashMap;
 
 #[test]
 fn test_complete_workflow() {

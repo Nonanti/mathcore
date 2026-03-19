@@ -1,3 +1,4 @@
+use crate::prelude::*;
 use crate::types::{BinaryOp, Expr, MathError, UnaryOp};
 use nom::{
     branch::alt,
@@ -239,6 +240,8 @@ fn function_call(input: &str) -> IResult<&str, Expr> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_parse_number() {

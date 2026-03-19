@@ -10,34 +10,33 @@ keywords = ["math", "symbolic", "algebra", "calculus", "cas"]
 categories = ["mathematics", "science"]
 
 [dependencies]
-nom = "7.1"
-num-complex = "0.4"
-num-traits = "0.2"
-num-bigint = "0.4"
-num-rational = "0.4"
-nalgebra = "0.32"
-thiserror = "1.0"
-indexmap = "2.0"
-ndarray = "0.15"
+nom = { version = "7.1", default-features = false, features = ["alloc"] }
+num-complex = { version = "0.4", default-features = false, features = ["libm"] }
+num-traits = { version = "0.2", default-features = false, features = ["libm"] }
+num-bigint = { version = "0.4", default-features = false }
+num-rational = { version = "0.4", default-features = false, features = ["num-bigint"] }
+nalgebra = { version = "0.32", default-features = false, features = ["alloc", "libm"] }
+ndarray = { version = "0.15", default-features = false, optional = true }
+thiserror = { version = "2.0", default-features = false }
+
+# std-only dependencies
 rayon = { version = "1.7", optional = true }
 rustfft = { version = "6.1", optional = true }
 wasm-bindgen = { version = "0.2", optional = true }
 getrandom = { version = "0.2", features = ["js"], optional = true }
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = { version = "0.2", features = ["js"] }
-
 [features]
-default = ["parallel", "fft"]
-parallel = ["rayon"]
-fft = ["rustfft"]
+default = ["std", "parallel", "fft"]
+std = [ "nalgebra/std", "ndarray?/std", "nom/std", "thiserror/std"]
+parallel = ["rayon", "std"]
+fft = ["rustfft", "std"]
 wasm = ["wasm-bindgen", "getrandom"]
-full = ["parallel", "fft"]
+full = ["std", "parallel", "fft"]
 
 [dev-dependencies]
-criterion = "0.5"
+criterion = { version = "0.5", default-features = false, features = ["html_reports"] }
 approx = "0.5"
-proptest = "1.4"
+proptest = { version = "1.4", default-features = false, features = ["no_std", "alloc"] }
 
 
 [profile.release]
@@ -45,5 +44,16 @@ lto = true
 codegen-units = 1
 opt-level = 3
 
+# Explicit expression bench is the only one we care to run
+# so disable the default harness that would run for lib.
+# This makes it possible to run `cargo bench` and assume criterion so for example
+# `cargo bench --quick` will run the expression bench with quick settings.
+[lib]
+bench = false
+
 [profile.bench]
 inherits = "release"
+
+[[bench]]
+name = "expression_bench"
+harness = false

@@ -1,7 +1,9 @@
 //! Fast Fourier Transform and other integral transforms
 
+use crate::prelude::*;
 use num_complex::Complex64;
-use std::f64::consts::PI;
+
+use core::f64::consts::PI;
 
 #[cfg(feature = "fft")]
 use rustfft::FftPlanner;
@@ -172,6 +174,7 @@ impl FFT {
 
 /// Sparse matrix representation and operations
 pub mod sparse {
+    use crate::prelude::*;
     use crate::types::MathError;
 
     /// Compressed Sparse Row matrix format
@@ -275,6 +278,8 @@ pub mod parallel {
     use crate::types::Expr;
     use rayon::prelude::*;
     use std::collections::HashMap;
+    use std::string::{String, ToString};
+    use std::vec::Vec;
 
     /// Parallel evaluation of multiple expressions
     pub fn parallel_evaluate(

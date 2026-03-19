@@ -1,8 +1,8 @@
 use crate::calculus::Calculus;
 use crate::engine::Engine;
+use crate::prelude::*;
 use crate::types::{BinaryOp, Expr, MathError};
 use num_complex::Complex64;
-use std::collections::HashMap;
 
 // solver for equations
 pub struct Solver;
@@ -349,11 +349,13 @@ impl Solver {
 }
 
 fn rand_float() -> f64 {
-    // Simple pseudo-random number generator
-    use std::time::{SystemTime, UNIX_EPOCH};
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap()
-        .subsec_nanos() as f64;
-    nanos / 1_000_000_000.0
+    // Simple pseudo-random number generator using a static counter
+    // This is deterministic but provides different values for numerical solver attempts
+    static mut COUNTER: u32 = 1;
+
+    // Use linear congruential generator (similar to simple C rand())
+    unsafe {
+        COUNTER = COUNTER.wrapping_mul(1103515245).wrapping_add(12345);
+        (COUNTER as f64) / (u32::MAX as f64)
+    }
 }

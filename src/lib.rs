@@ -18,6 +18,32 @@
 //! // solve equations
 //! let roots = MathCore::solve("x^2 - 4", "x").unwrap();
 //! ```
+#![no_std]
+
+#[cfg(feature = "std")]
+extern crate std;
+
+extern crate alloc;
+
+#[cfg(feature = "std")]
+use std::collections::HashMap as StdHashMap;
+
+#[cfg(feature = "std")]
+pub type HashMap<K, V> = StdHashMap<K, V>;
+
+#[cfg(not(feature = "std"))]
+use alloc::collections::BTreeMap;
+#[cfg(not(feature = "std"))]
+pub type HashMap<K, V> = BTreeMap<K, V>;
+
+// This prelude re-exports types std compatible types that are also available in no_std environments.
+pub mod prelude {
+    pub use super::HashMap;
+    pub use alloc::{boxed::Box, format, string::String, string::ToString, vec, vec::Vec};
+    pub use core::fmt;
+    pub use core::str::FromStr;
+}
+use prelude::*;
 
 pub mod calculus;
 pub mod differential;
@@ -30,7 +56,6 @@ pub mod solver;
 pub mod transforms;
 pub mod types;
 
-use std::collections::HashMap;
 pub use types::{Expr, MathError};
 
 pub struct MathCore {
@@ -274,6 +299,8 @@ impl Default for MathCore {
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_basic_arithmetic() {

@@ -1,8 +1,8 @@
 use crate::calculus::Calculus;
 use crate::engine::Engine;
+use crate::prelude::*;
 use crate::types::{BinaryOp, Expr, MathError};
 use nalgebra::DMatrix;
-use std::collections::HashMap;
 
 pub struct Optimization;
 
@@ -386,6 +386,8 @@ impl SymbolicIntegration {
 mod tests {
     use super::*;
     use crate::parser::Parser;
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_gradient() {
