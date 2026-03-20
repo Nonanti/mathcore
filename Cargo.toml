@@ -22,15 +22,12 @@ thiserror = { version = "2.0", default-features = false }
 # std-only dependencies
 rayon = { version = "1.7", optional = true }
 rustfft = { version = "6.1", optional = true }
-wasm-bindgen = { version = "0.2", optional = true }
-getrandom = { version = "0.2", features = ["js"], optional = true }
 
 [features]
 default = ["std", "parallel", "fft"]
 std = [ "nalgebra/std", "ndarray?/std", "nom/std", "thiserror/std"]
 parallel = ["rayon", "std"]
 fft = ["rustfft", "std"]
-wasm = ["wasm-bindgen", "getrandom"]
 full = ["std", "parallel", "fft"]
 
 [dev-dependencies]

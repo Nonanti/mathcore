@@ -42,6 +42,7 @@ pub mod prelude {
     pub use alloc::{boxed::Box, format, string::String, string::ToString, vec, vec::Vec};
     pub use core::fmt;
     pub use core::str::FromStr;
+    pub use num_traits::Float;
 }
 use prelude::*;
 
