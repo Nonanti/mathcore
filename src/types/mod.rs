@@ -1,7 +1,7 @@
+use crate::prelude::*;
+use alloc::rc::Rc;
+use core::fmt;
 use num_complex::Complex64;
-use std::collections::HashMap;
-use std::fmt;
-use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 pub enum Expr {
@@ -240,9 +240,9 @@ impl Context {
 
     pub fn with_defaults() -> Self {
         let mut ctx = Self::new();
-        ctx.set_var("pi", Expr::Number(std::f64::consts::PI));
-        ctx.set_var("e", Expr::Number(std::f64::consts::E));
-        ctx.set_var("tau", Expr::Number(std::f64::consts::TAU));
+        ctx.set_var("pi", Expr::Number(core::f64::consts::PI));
+        ctx.set_var("e", Expr::Number(core::f64::consts::E));
+        ctx.set_var("tau", Expr::Number(core::f64::consts::TAU));
         ctx
     }
 

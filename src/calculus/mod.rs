@@ -1,8 +1,8 @@
 pub mod limits;
 
 use crate::engine::Engine;
+use crate::prelude::*;
 use crate::types::{BinaryOp, Expr, MathError, UnaryOp};
-use std::collections::HashMap;
 
 // calculus stuff
 pub struct Calculus;

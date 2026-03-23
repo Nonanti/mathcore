@@ -1,6 +1,6 @@
 use crate::engine::Engine;
+use crate::prelude::*;
 use crate::types::{Expr, MathError};
-use std::collections::HashMap;
 
 pub struct Limits;
 

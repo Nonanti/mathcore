@@ -1,6 +1,6 @@
 use crate::engine::Engine;
+use crate::prelude::*;
 use crate::types::{BinaryOp, Expr, MathError};
-use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 pub struct ODESolution {

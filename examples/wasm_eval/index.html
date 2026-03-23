@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MathCore Wasm Eval</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #f7f1e3, #dff2eb);
+      color: #1f2a37;
+      font-family: "Avenir Next", "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(720px, 100%);
+      padding: 1.75rem;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(31, 42, 55, 0.15);
+    }
+
+    h1 {
+      margin: 0 0 0.5rem;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+    }
+
+    p {
+      margin: 0 0 1.25rem;
+      max-width: 58ch;
+      line-height: 1.5;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    input,
+    button,
+    pre {
+      border-radius: 14px;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      background: rgba(255, 255, 255, 0.9);
+      color: inherit;
+      font: 500 1rem "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace;
+    }
+
+    button {
+      border: 0;
+      padding: 0 1.25rem;
+      background: #0f766e;
+      color: white;
+      font: 700 0.95rem inherit;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    pre {
+      margin: 0;
+      min-height: 112px;
+      padding: 1rem;
+      border: 1px solid rgba(15, 118, 110, 0.18);
+      background: rgba(20, 32, 44, 0.94);
+      color: #e6fffa;
+      font: 500 0.98rem/1.55 "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    pre.error {
+      background: rgba(68, 18, 24, 0.94);
+      border-color: rgba(239, 68, 68, 0.28);
+      color: #ffe5e5;
+    }
+
+    .status {
+      margin-top: 0.875rem;
+      font-size: 0.92rem;
+      color: rgba(31, 42, 55, 0.72);
+    }
+
+    @media (max-width: 640px) {
+      .row {
+        grid-template-columns: 1fr;
+      }
+
+      button {
+        padding: 0.9rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>MathCore Wasm</h1>
+    <p>Build the wasm_eval example package first, then serve this folder statically and evaluate expressions directly against the exported wasm ABI.</p>
+    <div class="row">
+      <input id="expression" value="2^8 + sin(pi/2)" aria-label="Expression">
+      <button id="evaluate" disabled>Evaluate</button>
+    </div>
+    <pre id="output">Loading ./target/wasm32-unknown-unknown/release/mathcore_wasm_eval.wasm ...</pre>
+    <div class="status" id="status">Waiting for wasm module.</div>
+  </main>
+
+  <script type="module">
+    const wasmUrl = "./target/wasm32-unknown-unknown/release/mathcore_wasm_eval.wasm";
+    const output = document.getElementById("output");
+    const status = document.getElementById("status");
+    const button = document.getElementById("evaluate");
+    const input = document.getElementById("expression");
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+    let wasm = null;
+    const isFileProtocol = window.location.protocol === "file:";
+
+    if (isFileProtocol) {
+      output.classList.add("error");
+      output.textContent = "This page cannot load wasm directly from file:// in a normal browser. Serve the examples/wasm_eval folder over HTTP instead.";
+      status.textContent = "Open this page through a local static server, not from disk.";
+    }
+
+    async function loadWasm() {
+      const response = await fetch(wasmUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch wasm (${response.status} ${response.statusText}). Build the wasm package first and serve this folder over HTTP.`);
+      }
+
+      const bytes = await response.arrayBuffer();
+      const { instance } = await WebAssembly.instantiate(bytes, {});
+      return instance.exports;
+    }
+
+    function writeString(text) {
+      const bytes = encoder.encode(text);
+      const ptr = wasm.alloc_buffer(bytes.length);
+      new Uint8Array(wasm.memory.buffer, ptr, bytes.length).set(bytes);
+      return { ptr, len: bytes.length };
+    }
+
+    function readPackedString(packed) {
+      const ptr = Number(packed & 0xffffffffn);
+      const len = Number(packed >> 32n);
+      const bytes = new Uint8Array(wasm.memory.buffer, ptr, len);
+      const text = decoder.decode(bytes.slice());
+      wasm.free_buffer(ptr, len);
+      return text;
+    }
+
+    function evaluate() {
+      if (!wasm) {
+        output.classList.add("error");
+        output.textContent = "Wasm module is not loaded yet.";
+        return;
+      }
+
+      const expression = input.value.trim();
+      if (!expression) {
+        output.classList.add("error");
+        output.textContent = "Enter an expression to evaluate.";
+        return;
+      }
+
+      const { ptr, len } = writeString(expression);
+      const packed = wasm.evaluate_expression(ptr, len);
+      wasm.free_buffer(ptr, len);
+      const text = readPackedString(packed);
+      output.classList.toggle("error", text.startsWith("Error:"));
+      output.textContent = text;
+      status.textContent = "Evaluated via wasm export.";
+    }
+
+    button.addEventListener("click", evaluate);
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        evaluate();
+      }
+    });
+
+    if (!isFileProtocol) {
+      try {
+        wasm = await loadWasm();
+        button.disabled = false;
+        output.classList.remove("error");
+        status.textContent = "Wasm module loaded.";
+        output.textContent = "Ready.";
+      } catch (error) {
+        output.classList.add("error");
+        output.textContent = error instanceof Error ? error.message : String(error);
+        status.textContent = "Wasm load failed. Serve the folder over HTTP and make sure the wasm package has been built.";
+      }
+    }
+  </script>
+</body>
+</html>

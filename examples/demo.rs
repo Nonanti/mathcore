@@ -1,5 +1,5 @@
+use mathcore::prelude::*;
 use mathcore::MathCore;
-use std::collections::HashMap;
 
 fn main() {
     println!("MathCore Demonstration\n");

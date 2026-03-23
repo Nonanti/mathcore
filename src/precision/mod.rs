@@ -1,9 +1,8 @@
+use crate::prelude::*;
 use crate::types::MathError;
 use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::{FromPrimitive, One, Signed, ToPrimitive, Zero};
-use std::fmt;
-use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub enum PrecisionNumber {
@@ -302,6 +301,8 @@ impl ArbitraryPrecision {
 #[cfg(test)]
 mod tests {
     use super::*;
+    extern crate std;
+    use std::println;
 
     #[test]
     fn test_precision_arithmetic() {

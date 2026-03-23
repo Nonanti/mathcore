@@ -1,6 +1,6 @@
+use crate::prelude::*;
 use crate::types::{BinaryOp, Context, Expr, MathError, UnaryOp};
 use num_complex::Complex64;
-use std::collections::HashMap;
 
 // eval engine for expressions
 pub struct Engine {

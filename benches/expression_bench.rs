@@ -1,7 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
 use mathcore::differential::DifferentialEquations;
-use mathcore::{calculus::Calculus, engine::Engine, parser::Parser, MathCore};
-use std::collections::HashMap;
+use mathcore::{calculus::Calculus, engine::Engine, parser::Parser};
 
 fn parse_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("parsing");
@@ -179,7 +178,9 @@ fn precision_benchmark(c: &mut Criterion) {
     let a = PrecisionNumber::from_str_with_precision("123456789012345678901234567890").unwrap();
     let b = PrecisionNumber::from_str_with_precision("987654321098765432109876543210").unwrap();
 
-    group.bench_function("big_multiply", |b| b.iter(|| a.multiply(black_box(&b))));
+    group.bench_function("big_multiply", |bencher| {
+        bencher.iter(|| a.multiply(black_box(&b)))
+    });
 
     group.bench_function("compute_pi", |b| {
         b.iter(|| ArbitraryPrecision::compute_pi(black_box(50)))

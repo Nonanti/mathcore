@@ -1,6 +1,6 @@
 use mathcore::ml::Optimization;
 use mathcore::parser::Parser;
-use std::collections::HashMap;
+use mathcore::prelude::*;
 
 fn main() {
     println!("Optimization Examples\n");
